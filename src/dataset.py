@@ -16,14 +16,21 @@ TEST_SET_FILE_PATH = 'data/test_set.csv'
 OUTPUT_PREDICTION_FILE_PATH = 'data/predicts.csv'
 
 
-class TrainingSet(object):
+class DataSet(object):
 
-    def __init__(self, training_set_path):
+    def __init__(self, training_set_path, test_set_path):
         self.training_set_path = training_set_path
+        self.test_set_path = test_set_path
+
         self.training_set = self.build_training_set()
-        self.float64_training_set = self.build_numeric_training_set()
+        self.test_set = self.build_test_set()
+
+        self.float64_training_set = self.select_numeric_data(self.training_set)
 
         self.header_columns = ['1', '2', '3', '4', '5']
+
+    def build_test_set(self):
+        return pd.read_csv(self.test_set_path)
 
     def build_training_set(self):
         return pd.read_csv(self.training_set_path, dtype={'1': np.float64,
@@ -31,9 +38,6 @@ class TrainingSet(object):
                                                           '3': np.float64,
                                                           '4': np.float64,
                                                           '5': np.float64})
-
-    def build_test_set(self):
-        return
 
     def text_feature_extract(df):
         """
@@ -43,10 +47,9 @@ class TrainingSet(object):
         """
         return df
 
-    def build_numeric_training_set(self):
-        # column_names = list(training_set)
-        # health_test_columns = list(filter(lambda x: x not in header_columns, column_names))
-        return self.training_set.select_dtypes(['float64'])
+    @staticmethod
+    def select_numeric_data(df):
+        return df.select_dtypes(['float64'])
 
     def get_Y(self, dataset):
         return dataset[self.header_columns].values
@@ -54,7 +57,12 @@ class TrainingSet(object):
     def get_X(self, dataset):
         return dataset.drop(self.header_columns, axis=1).values
 
+    def get_test_set_X(self, test_set, columns):
+        return test_set[columns]
+
+    def get_test_columns(self):
+        return list(self.float64_training_set.drop(self.header_columns, axis=1))
+
 
 if __name__ == "__main__":
-    training_set = TrainingSet(TRAINING_SET_FILE_PATH)
-    print(training_set.get_X(training_set.float64_training_set))
+    dataset = DataSet(TRAINING_SET_FILE_PATH, TEST_SET_FILE_PATH)
