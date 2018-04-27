@@ -58,24 +58,24 @@ def run():
 
     # print(type(training_set_Y_1[0]))
 
-    # gbdt = GBClassifier(training_set_X, training_set_Y_1, test_set_X)
-    # gbdt.k_fold_validate(2)
-    # print("\n")
-    #
-    # gbdt = GBClassifier(training_set_X, training_set_Y_2, test_set_X)
-    # gbdt.k_fold_validate(2)
-    # print("\n")
-    #
-    gbdt = GBClassifier(training_set_X, training_set_Y_3, test_set_X)
+    gbdt = GBClassifier(training_set_X, training_set_Y_1, test_set_X)
     gbdt.k_fold_validate(2)
     print("\n")
-    #
-    # gbdt = GBClassifier(training_set_X, training_set_Y_4, test_set_X)
-    # gbdt.k_fold_validate(2)
-    # print("\n")
-    #
-    # gbdt = GBClassifier(training_set_X, training_set_Y_5, test_set_X)
-    # gbdt.k_fold_validate(2)
+
+    gbdt = GBClassifier(training_set_X, training_set_Y_2, test_set_X)
+    gbdt.k_fold_validate(2)
+    print("\n")
+
+    gbdt = GBClassifier(training_set_X, training_set_Y_3, test_set_X, True)
+    gbdt.k_fold_validate(2)
+    print("\n")
+
+    gbdt = GBClassifier(training_set_X, training_set_Y_4, test_set_X, True)
+    gbdt.k_fold_validate(2)
+    print("\n")
+
+    gbdt = GBClassifier(training_set_X, training_set_Y_5, test_set_X, True)
+    gbdt.k_fold_validate(2)
 
 
 if __name__ == "__main__":

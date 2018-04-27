@@ -4,7 +4,8 @@ Author: Yuzhou Yin
 """
 
 import math
-
+import numpy as np
+from sklearn import preprocessing
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import accuracy_score, recall_score, f1_score
 from sklearn.model_selection import GridSearchCV, KFold
@@ -21,10 +22,16 @@ N_ESTIMATORS = 10
 
 class GBClassifier(object):
 
-    def __init__(self, training_set_X, training_set_Y, test_set):
+    def __init__(self, training_set_X, training_set_Y, test_set, encode=False):
         self.training_set_X = training_set_X
         self.test_set = test_set
+
         self.training_set_Y = training_set_Y
+        self.encode = encode
+
+        if encode:
+            self.training_set_Y = self.training_set_Y * 1000
+            self.training_set_Y = self.training_set_Y.astype(np.int64)
 
     def get_classifier(self, features, labels):
         """
@@ -65,16 +72,22 @@ class GBClassifier(object):
 
         print("Average score of %s fold validation: %s" % (fold, sum(score) / fold))
 
-        return score
+        return sum(score) / fold
 
-    @staticmethod
-    def meinian_evaluate(y_train, y_pred):
+    def meinian_evaluate(self, y_train, y_pred):
         """
         Evaluation method based on the Meinian description
         :param y_train: training_set labels
         :param y_pred:: predict labels
         :return: evaluation result
         """
+        if self.encode:
+            y_train = y_train.astype(np.float64)
+            y_pred = y_pred.astype(np.float64)
+
+            y_train = y_train / 1000
+            y_pred = y_pred / 1000
+
         y1 = y_train.tolist()
         y2 = y_pred.tolist()
 
