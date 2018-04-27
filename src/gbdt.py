@@ -52,9 +52,7 @@ class GBClassifier(object):
         """
         kf = KFold(n_splits=fold)
 
-        accuracy = []
-        recall = []
-        f1 = []
+        score = []
 
         for train_index, test_index in kf.split(self.training_set_X):
             X_train, X_test = self.training_set_X[train_index], self.training_set_X[test_index]
@@ -63,15 +61,11 @@ class GBClassifier(object):
             gbc = self.get_classifier(X_train, Y_train)
             y_pred = self.predict(gbc, X_test)
 
-            accuracy.append(accuracy_score(Y_test, y_pred))
-            recall.append(recall_score(Y_test, y_pred))
-            f1.append(f1_score(Y_test, y_pred))
+            score.append(self.meinian_evaluate(Y_train, y_pred))
 
-        print("Average accuracy of %s fold validation: %s" % (fold, sum(accuracy) / len(accuracy)))
-        print("Average recall of %s fold validation: %s" % (fold, sum(recall) / len(recall)))
-        print("Average f1 score of %s fold validation: %s" % (fold, sum(f1) / len(f1)))
+        print("Average score of %s fold validation: %s" % (fold, sum(score) / fold))
 
-        return accuracy, recall, f1
+        return score
 
     @staticmethod
     def meinian_evaluate(y_train, y_pred):
@@ -81,23 +75,15 @@ class GBClassifier(object):
         :param y_pred:: predict labels
         :return: evaluation result
         """
-
-        def func(y1, y2):
-            r = 0
-            for i in range(len(y1)):
-                r += math.pow(math.log(y1[i] + 1) - math.log(y2[i] + 1), 2)
-
-            return r / len(y1)
+        y1 = y_train.tolist()
+        y2 = y_pred.tolist()
 
         score = 0
-        for i in range(y_train.shape[0]):
-            y1 = y_train[i,].tolist()
-            y2 = y_pred[i,].tolist()
+        for i in range(len(y1)):
+            score += math.pow(math.log(y1[i] + 1) - math.log(y2[i] + 1), 2)
 
-            score += func(y1, y2)
-
-        print("Score: %s" % score)
-        return score
+        print("Score: %s" % (score / len(y1)))
+        return score / len(y1)
 
     @staticmethod
     def optimize_parameter(X, y, param_test=None):

@@ -2,7 +2,10 @@ import numpy as np
 import pandas as pd
 import time
 
-# from base_func import remain_feat
+pd.set_option('display.height', 1000)
+pd.set_option('display.max_rows', 500)
+pd.set_option('display.max_columns', 500)
+pd.set_option('display.width', 1000)
 
 start_time = time.time()
 # 读取数据
@@ -23,9 +26,11 @@ part1_2 = part1_2[part1_2['vid'].isin(vid_set['vid'])]
 def filter_None(data):
     data = data[data['field_results'] != '']
     data = data[data['field_results'] != '未查']
+    data = data[data['field_results'] != '???']
     return data
 
 
+print(part1_2[['field_results']])
 part1_2 = filter_None(part1_2)
 
 # 过滤列表，过滤掉不重要的table_id 所在行
@@ -152,7 +157,10 @@ def data_clean(df):
 
 
 train = data_clean(train)
-
+train = train[(train['1'] != '???')
+              & (train['2'] != '???')
+              & (train['2'] != '????')
+              & (train['1'] != '????')]
 
 print('---------------保存train_set和test_set---------------------')
 train.to_csv('data/train_set.csv', index=False, encoding='utf-8')
